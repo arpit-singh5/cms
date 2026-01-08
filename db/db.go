@@ -14,6 +14,9 @@ func DBConnect() *pgxpool.Pool {
 		os.Exit(1)
 	}
 	defer conn.Close()
+
+
+	//migration code
 	migrate(conn, "migration/user.sql")
 	migrate(conn, "migration/post.sql")
 	return conn
