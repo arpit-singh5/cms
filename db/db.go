@@ -14,5 +14,25 @@ func DBConnect() *pgxpool.Pool {
 		os.Exit(1)
 	}
 	defer conn.Close()
+	migrate(conn, "migration/user.sql")
+	migrate(conn, "migration/post.sql")
 	return conn
+}
+
+func migrate(pool *pgxpool.Pool, path string) error {
+	sqlBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	_, err = tx.Exec(ctx, string(sqlBytes))
+	if err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }

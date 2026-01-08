@@ -1,6 +1,7 @@
 --POST TABLE
 CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
     content TEXT,
@@ -19,11 +20,12 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 
 CREATE TABLE IF NOT EXISTS post_tags (
-    post_id INTEGER NOT NULL REFRENCES posts(id) ON DELETE CASCADE,
-    tag_id INTEGER NOT NULL REFRENCES tags(id) ON DELETE CASCADE,
+    post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (post_id, tag_id)
 );
 
+CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_tags_slug ON tags(slug);
 CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
